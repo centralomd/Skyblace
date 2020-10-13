@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/centralomd/Skyblace#readme",
   "dependencies": {
-    "discord.js": "^12.3.1"
+    "discord.js": "^12.3.1",
+    "mongoose": "^5.10.9",
+    "path": "^0.12.7",
+    "walk": "^2.3.14"
   }
 }

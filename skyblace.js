@@ -1,30 +1,50 @@
 // Packaging
-const fs = require('fs');
 const Discord = require('discord.js');
+const walk = require('walk'); 
+const fs = require("fs");
+const UserModel = require('./models/user');
+const { resolve } = require("path");
+const { connect } = require('mongoose');
 
 // Setup Stuffs
 const client = new Discord.Client();
 const prefix = 's;'
+const mongoPath = 'mongodb+srv://centralomd:R1egyk19efIrKBBS@cluster0.f50iq.mongodb.net/Skyblace?retryWrites=true&w=majority';
 
 // Setup
 client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+client.categories = new Discord.Collection();
 
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
-}
+const walker = walk.walk("./commands");
+
+walker.on("file", function (root, stats, next) {
+  if (!stats.name.endsWith(".js")) return;
+  const category = resolve(root).split("\\").slice(-1)[0];
+  if (!client.categories.has(category)) {
+    client.categories.set(category, []);
+  }
+
+  let props = require(`${resolve(root)}/${stats.name}`);
+  let commandName = stats.name.split(".")[0];
+  console.log(`Attempting to load command ${commandName}`);
+
+  client.commands.set(commandName, props);
+
+  client.categories.set(category, [
+    ...client.categories.get(category),
+    commandName,
+  ]);
+
+  next();
+});
 
 client.once('ready', async () => {
-  const storedBalances = await Users.findAll();
-  storedBalances.forEach(b => currency.set(b.user_id, b));
-
   console.log(`${client.user.username} is online and running! With:\n Username: ${client.user.username}`)
-  client.user.setPresence({ activity: { name: `${client.users.cache.size}`, type: "WATCHING" }, status: 'online' })
+  client.user.setPresence({ activity: { name: `${client.users.cache.size} users | BETA v0`, type: "WATCHING" }, status: 'online' })
 });
 
 client.on('message', async message => {
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
@@ -38,18 +58,15 @@ client.on('message', async message => {
     if (command.args && !args.length) {
         return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
     }
-    if (message.channel.type === 'dm') {
-        return message.reply('I can\'t execute commands inside DMs!');
-    }
-
+    if (message.channel.type === 'dm') return;
 
     try {
-        command.execute(message, args, client, currency, Discord);
+        command.execute(message, args, client, UserModel, prefix);
     } catch (error) {
         console.error(error);
         console.log(`Execution of Command (${commandName}) has failed at ${new Date().getTime()} with the error: \n ${error} \n Executed by ${message.author.tag} with ID of ${message.author.id}.`)
     
-        const executionfailure = new Discord.MessageEmbed()
+        const executionfailure = new MessageEmbed()
           .setColor('#FC352C')
           .setTitle('Error')
           .setDescription('Bug Found.')
@@ -66,4 +83,12 @@ client.on('message', async message => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+connect(mongoPath, {
+  useNewUrlParser: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true
+}, (err, connection) => {
+  if (err) return console.log(`MONGODB DATABASE CONNECTION ERROR: \n \n ${err}`);
+  console.log('202: MONGODB DATABASE SUCCESSFULLY CONNECTED.')
+});
+client.login('NzIwNjMyODk0MDYxNTQzNDM0.XuIzrg.fIIO4xh3RYD7DiSS9uE8-u-uGhk');
