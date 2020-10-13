@@ -91,4 +91,4 @@ connect(mongoPath, {
   if (err) return console.log(`MONGODB DATABASE CONNECTION ERROR: \n \n ${err}`);
   console.log('202: MONGODB DATABASE SUCCESSFULLY CONNECTED.')
 });
-client.login('NzIwNjMyODk0MDYxNTQzNDM0.XuIzrg.fIIO4xh3RYD7DiSS9uE8-u-uGhk');
+client.login(process.env.DISCORD_TOKEN);
