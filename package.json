@@ -2,7 +2,7 @@
   "name": "skyblace",
   "version": "1.0.0",
   "description": "",
-  "main": "skyblace.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,15 +11,15 @@
     "url": "git+https://github.com/centralomd/Skyblace.git"
   },
   "author": "centralomd",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/centralomd/Skyblace/issues"
   },
   "homepage": "https://github.com/centralomd/Skyblace#readme",
   "dependencies": {
-    "discord.js": "^12.3.1",
-    "mongoose": "^5.10.9",
-    "path": "^0.12.7",
+    "discord.js": "^12.5.1",
+    "mongoose": "^5.11.11",
+    "sequelize": "^6.3.5",
     "walk": "^2.3.14"
   }
 }
