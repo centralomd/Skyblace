@@ -2,13 +2,14 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const prefix = 'sb '
 const { walk } = require('walk');
+const { resolve } = require('path');
 const client = new Discord.Client();
 const { Users, CurrencyShop } = require('./dbObjects');
 const { Op } = require('sequelize');
 const allplayer = new Discord.Collection();
 
-client.commands = new Collection();
-client.categories = new Collection();
+client.commands = new Discord.Collection();
+client.categories = new Discord.Collection();
 
 const walker = walk('./commands');
 
@@ -245,8 +246,6 @@ client.on('message', message => {
   try {
     const ust = allplayer.get(message.author.id);
 
-    if (!ust) return message.channel.send("New to Skyblace? `sb start` to create your island.");
-
     command.execute(message, args, client, CurrencyShop, Op, allplayer);
   } catch (error) {
     console.error(error);
@@ -263,4 +262,4 @@ const server = http.createServer((req, res) => {
 server.listen(3000);*/
 
 // login to Discord with your app's token
-client.login("NzIwNjMyODk0MDYxNTQzNDM0.XuIzrg.YO1RbBDKkJUwYI02j2wnJ9RsOmM");
+client.login(process.env.DISCORD_TOKEN);
